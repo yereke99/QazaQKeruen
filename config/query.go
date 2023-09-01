@@ -67,4 +67,17 @@ var (
 		contact varchar(50),
 		code INTEGER
 	);`
+
+	createTableSecurity = `CREATE TABLE IF NOT EXISTS security(
+		id BIGSERIAL PRIMARY KEY,
+		userId BIGINT,
+		firstName varchar(50),
+		lastName varchar(50), 
+		A varchar(50),
+		B varchar(50),
+		firstNameD varchar(50),
+		lastNameD varchar(50), 
+		carNumber varchar(200),
+		timeStart varchar(200)
+	);`
 )

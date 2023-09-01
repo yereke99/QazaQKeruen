@@ -21,6 +21,7 @@ var tables = []string{
 	//createOrderTable,
 	createOrderProcessTable,
 	createTableSMS,
+	createTableSecurity,
 }
 
 // DB config

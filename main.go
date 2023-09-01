@@ -27,25 +27,29 @@ var dbPool, err = config.NewDBPool(config.DataBaseConfig{
 })
 
 var (
-	authDB                = repository.NewDatabase(dbPool)
-	driverDB              = repository.NewDriverRepository(dbPool)
-	userDB                = repository.NewUserRepository(dbPool)
-	offerDriverDB         = repository.NewOfferDriverRepository(dbPool)
-	offerUserDB           = repository.NewOfferUserRepository(dbPool)
-	orderDB               = repository.NewOrderRepository(dbPool)
-	historyDB             = repository.NewHistoryRepository(dbPool)
-	processDb             = repository.NewProcessRepository(dbPool)
-	searchDb              = repository.NewSearchRepository(dbPool)
-	jwtService            = service.NewJWTService()
-	authService           = service.NewAuthService(authDB)
-	driverService         = service.NewDriverService(driverDB)
-	userService           = service.NewUserService(userDB)
-	offerDriverService    = service.NewOfferDriverService(offerDriverDB)
-	offerUserService      = service.NewOfferuserService(offerUserDB)
-	historyService        = service.NewHistoryService(historyDB)
-	orderService          = service.NewOrderService(orderDB)
-	processService        = service.NewProcessService(processDb)
-	searchService         = service.NewSearchService(searchDb)
+	authDB        = repository.NewDatabase(dbPool)
+	driverDB      = repository.NewDriverRepository(dbPool)
+	userDB        = repository.NewUserRepository(dbPool)
+	offerDriverDB = repository.NewOfferDriverRepository(dbPool)
+	offerUserDB   = repository.NewOfferUserRepository(dbPool)
+	orderDB       = repository.NewOrderRepository(dbPool)
+	historyDB     = repository.NewHistoryRepository(dbPool)
+	processDb     = repository.NewProcessRepository(dbPool)
+	searchDb      = repository.NewSearchRepository(dbPool)
+	securityDB    = repository.NewSecurityService(dbPool)
+	jwtService    = service.NewJWTService()
+
+	authService        = service.NewAuthService(authDB)
+	driverService      = service.NewDriverService(driverDB)
+	userService        = service.NewUserService(userDB)
+	offerDriverService = service.NewOfferDriverService(offerDriverDB)
+	offerUserService   = service.NewOfferuserService(offerUserDB)
+	historyService     = service.NewHistoryService(historyDB)
+	orderService       = service.NewOrderService(orderDB)
+	processService     = service.NewProcessService(processDb)
+	searchService      = service.NewSearchService(searchDb)
+	securityService    = service.NewSecurityService(securityDB)
+
 	authController        = controller.NewAuthController(authService, jwtService)
 	driverController      = controller.NewDriverController(driverService, jwtService)
 	userController        = controller.NewUserController(userService, jwtService)
@@ -55,6 +59,7 @@ var (
 	orderController       = controller.NewOrderController(orderService)
 	processController     = controller.NewProcessController(processService)
 	searchController      = controller.NewSearchController(searchService)
+	securityController    = controller.NewSecurityController(securityService, jwtService)
 )
 
 func main() {
@@ -66,6 +71,8 @@ func main() {
 	} else {
 		log.Println("Success init.")
 	}
+
+	gin.SetMode(gin.ReleaseMode)
 
 	r := gin.Default()
 	r.Use(gin.Recovery())
@@ -79,7 +86,6 @@ func main() {
 		AllowOriginFunc: func(origin string) bool {
 			return origin == "https://api.qkeruen.kz"
 		},
-		//MaxAge: 12 * time.Hour,
 	}))
 
 	r.GET("/get", func(ctx *gin.Context) {
@@ -95,6 +101,10 @@ func main() {
 	r.GET("/user", middleware.AuthorizeJWTUser(jwtService), userController.GetProfile)
 	r.PUT("/user", middleware.AuthorizeJWTUser(jwtService), userController.Update)
 	r.DELETE("/user/:id", middleware.AuthorizeJWTUser(jwtService), userController.Delete)
+
+	// Secuirity
+	r.POST("/user/security", middleware.AuthorizeJWTUser(jwtService), securityController.Add)
+	//r.POST("/user/secuirity", middleware.AuthorizeJWTUser(jwtService))
 
 	r.GET("/order/user/for-driver/:id", middleware.AuthorizeJWTDriver(jwtService), orderController.GetOrders)
 	//orderDriverRouter.GET("/")

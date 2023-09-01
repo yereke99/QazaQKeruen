@@ -3,8 +3,8 @@ package repository
 import (
 	"context"
 	"qkeruen/dto"
-	"qkeruen/models"
 	"qkeruen/help"
+	"qkeruen/models"
 )
 
 type OfferDriverDB struct {
@@ -17,7 +17,7 @@ func NewOfferDriverRepository(ds PgxIface) OfferDriverDB {
 	}
 }
 
-func (pool OfferDriverDB) GetByID(id int64) (*models.UserModelForDriver, error){
+func (pool OfferDriverDB) GetByID(id int64) (*models.UserModelForDriver, error) {
 	q := `Select id, phone, firstName, lastName, ava from customer where id=$1`
 
 	row := pool.DB.QueryRow(context.Background(), q, id)
@@ -30,7 +30,7 @@ func (pool OfferDriverDB) GetByID(id int64) (*models.UserModelForDriver, error){
 		&user.FirstName,
 		&user.LastName,
 		&user.Avatar,
-	); err != nil{
+	); err != nil {
 		return nil, err
 	}
 
@@ -45,7 +45,7 @@ func (pool OfferDriverDB) Create(id int, offer dto.OfferRequest) error {
 		price,
 		type,
 		driver
-	)VALUES($1,$2,$3,$4,$5,$6);`
+	)VALUES($1,$2,$3,$4,$5,$6)`
 
 	_, err := pool.DB.Exec(context.Background(), q, offer.Comment, offer.From, offer.To, offer.Price, offer.Type, id)
 
@@ -109,16 +109,16 @@ func (pool OfferDriverDB) Search(to, from, type_ string) ([]*models.OfferDriverM
 	if err != nil {
 		return nil, err
 	}
-    
+
 	defer rows.Close()
 
 	var offers []*models.OfferDriverModel
-	
+
 	c := help.Choose(type_)
-	
+
 	for rows.Next() {
 		offer := new(models.OfferDriverModel)
-        
+
 		err := rows.Scan(
 			&offer.Id,
 			&offer.Comment,
@@ -132,7 +132,7 @@ func (pool OfferDriverDB) Search(to, from, type_ string) ([]*models.OfferDriverM
 		if err != nil {
 			return nil, err
 		}
-        if help.Choose(offer.Type) == c{
+		if help.Choose(offer.Type) == c {
 			offers = append(offers, offer)
 		}
 	}
@@ -140,13 +140,12 @@ func (pool OfferDriverDB) Search(to, from, type_ string) ([]*models.OfferDriverM
 	return offers, nil
 }
 
-
-func (pool OfferDriverDB) Delete(offerId int64) error{
+func (pool OfferDriverDB) Delete(offerId int64) error {
 	q := `Delete from offer_driver WHERE id=$1`
 
 	_, err := pool.DB.Exec(context.Background(), q, offerId)
 
-	if err != nil{
+	if err != nil {
 		return err
 	}
 

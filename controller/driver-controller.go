@@ -31,7 +31,6 @@ func (d *driverController) Register(ctx *gin.Context) {
 				"error": fmt.Sprintf("bad request: %v\n", err),
 			},
 		)
-		// exit process
 		return
 	}
 

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"qkeruen/models"
 	"qkeruen/service"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -47,4 +48,38 @@ func (s *securityController) Add(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, "created.")
+}
+
+func (s *securityController) GetMyHistory(ctx *gin.Context) {
+	id, _ := strconv.ParseInt(ctx.Param("id"), 10, 64)
+
+	res, err := s.SecurityService.GetMyHistory(id)
+
+	if err != nil {
+		ctx.JSON(
+			http.StatusBadRequest, gin.H{
+				"error": fmt.Sprintf("bad request: %v\n", err.Error()),
+			},
+		)
+		return
+	}
+
+	ctx.JSON(200, res)
+}
+
+func (s *securityController) Finish(ctx *gin.Context) {
+	id, _ := strconv.ParseInt(ctx.Param("id"), 10, 64)
+
+	res, err := s.SecurityService.Finish(id)
+
+	if err != nil {
+		ctx.JSON(
+			http.StatusBadRequest, gin.H{
+				"error": fmt.Sprintf("bad request: %v\n", err.Error()),
+			},
+		)
+		return
+	}
+
+	ctx.JSON(200, res)
 }

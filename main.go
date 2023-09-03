@@ -104,7 +104,8 @@ func main() {
 
 	// Secuirity
 	r.POST("/user/security", middleware.AuthorizeJWTUser(jwtService), securityController.Add)
-	//r.POST("/user/secuirity", middleware.AuthorizeJWTUser(jwtService))
+	r.GET("/user/security/:id", middleware.AuthorizeJWTUser(jwtService), securityController.GetMyHistory)
+	r.PUT("/user/security/finish/:id", middleware.AuthorizeJWTUser(jwtService), securityController.Finish)
 
 	r.GET("/order/user/for-driver/:id", middleware.AuthorizeJWTDriver(jwtService), orderController.GetOrders)
 	//orderDriverRouter.GET("/")

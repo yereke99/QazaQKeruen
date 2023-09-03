@@ -8,7 +8,8 @@ import (
 
 type SecurityService interface {
 	Create(data models.Security) error
-	Finish() *models.Security
+	GetMyHistory(id int64) ([]*models.Security, error)
+	Finish(id int64) (*models.Security, error)
 }
 
 type securityService struct {
@@ -27,6 +28,7 @@ func (s *securityService) Create(data models.Security) error {
 	currentTime := time.Now()
 	timeNow := currentTime.Format("2006-01-02 15:04:05")
 	data.TimeStart = timeNow
+	data.Check = "false"
 
 	if err := s.db.Insert(data); err != nil {
 		return err
@@ -35,8 +37,24 @@ func (s *securityService) Create(data models.Security) error {
 	return nil
 }
 
-func (s *securityService) Finish() *models.Security {
-	var security models.Security
+func (s *securityService) GetMyHistory(id int64) ([]*models.Security, error) {
+	res, err := s.db.GetMyHistory(id)
 
-	return &security
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (s *securityService) Finish(id int64) (*models.Security, error) {
+	timeNow := time.Now()
+	timeNowStr := timeNow.Format(time.RFC3339)
+
+	res, err := s.db.Finish(id, timeNowStr)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }

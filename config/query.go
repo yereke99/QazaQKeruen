@@ -75,7 +75,7 @@ var (
 		lastName     varchar(50), 
 		A            varchar(50),
 		B            varchar(50),
-		fioD         varchar(50),
+		fiod         varchar(50),
 		phone        varchar(50), 
 		carNumber    varchar(200),
 		timeStart    varchar(200),

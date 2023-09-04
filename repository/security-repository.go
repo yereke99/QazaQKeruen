@@ -23,7 +23,7 @@ func (pool *SecurityDB) Insert(data models.Security) error {
 		    lastName, 
 		    A,
 		    B,
-		    fioD,
+		    fiod,
 		    phone, 
 		    carNumber,
 			timeStart,
@@ -67,7 +67,7 @@ func (pool *SecurityDB) Finish(id int64, time string) (*models.Security, error) 
 		return nil, err
 	}
 
-	qu := `Select userId, firstName, lastName, A, B, fioD, phone, carNumber, timeStart, timeFinish  from security where id=$1`
+	qu := `Select userId, firstName, lastName, A, B, fiod, phone, carNumber, timeStart, timeFinish  from security where id=$1`
 
 	row, err := pool.DB.Query(context.Background(), qu, id)
 	if err != nil {
@@ -100,7 +100,7 @@ func (pool *SecurityDB) Finish(id int64, time string) (*models.Security, error) 
 }
 
 func (pool *SecurityDB) GetMyHistory(id int64) ([]*models.Security, error) {
-	q := `SELECT userId, firstName, lastName, A, B, fioD, phone, carNumber, timeStart, timeFinish FROM security WHERE userId=$1`
+	q := `SELECT userId, firstName, lastName, A, B, fiod, phone, carNumber, timeStart, timeFinish FROM security WHERE userId=$1`
 
 	rows, err := pool.DB.Query(context.Background(), q, id)
 

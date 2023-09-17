@@ -36,13 +36,15 @@ func (c *userController) Register(ctx *gin.Context) {
 	}
 
 	user.Token = ctx.GetHeader("Authorization")
-	if err := c.UserService.Create(user); err != nil {
+	data, err := c.UserService.Create(user)
+
+	if err != nil {
 		fmt.Println(err)
 		ctx.JSON(http.StatusConflict, gin.H{"message": "error in user create service."})
 		return
 	}
-    
-	ctx.JSON(201, gin.H{"message": "Saved."})
+
+	ctx.JSON(201, data)
 }
 
 func (c *userController) GetProfile(ctx *gin.Context) {

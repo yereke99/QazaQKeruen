@@ -29,11 +29,11 @@ func (s *offerDriverService) CreateOffer(id int, offer dto.OfferRequest) error {
 	return s.db.Create(id, offer)
 }
 
-func (s *offerDriverService) GetByID(id int64) (*models.UserModelForDriver, error){
+func (s *offerDriverService) GetByID(id int64) (*models.UserModelForDriver, error) {
 	res, err := s.db.GetByID(id)
 
-	if err != nil{
-		return nil, err 
+	if err != nil {
+		return nil, err
 	}
 
 	return res, nil

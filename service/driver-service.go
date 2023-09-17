@@ -7,7 +7,7 @@ import (
 )
 
 type DriverService interface {
-	CreateDriver(data models.DriverRegister) error
+	CreateDriver(data models.DriverRegister) (*models.DriverModel, error)
 	GetProfile(token string) (*models.DriverModel, error)
 	UpdateService(update models.DriverModel) (*models.DriverModel, error)
 	Delete(id int) error
@@ -23,14 +23,14 @@ func NewDriverService(ds repository.DriverDB) *driverService {
 	}
 }
 
-func (s *driverService) CreateDriver(data models.DriverRegister) error {
-	err := s.db.InsertDriverData(data)
+func (s *driverService) CreateDriver(data models.DriverRegister) (*models.DriverModel, error) {
+	driver, err := s.db.InsertDriverData(data)
 
 	if err != nil {
-		return err
+		return driver, err
 	}
 
-	return nil
+	return driver, nil
 }
 
 func (s *driverService) GetProfile(token string) (*models.DriverModel, error) {

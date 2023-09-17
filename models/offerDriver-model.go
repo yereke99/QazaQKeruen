@@ -8,4 +8,5 @@ type OfferDriverModel struct {
 	Comment string `json:"comment"`
 	Type    string `json:"type"`
 	User    int64  `json:"user"`
+	UserAVA string `json:"ava"`
 }

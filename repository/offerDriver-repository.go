@@ -102,14 +102,14 @@ func (pool OfferDriverDB) FindAllOffers() ([]*models.OfferDriverModel, error) {
 }
 
 func (pool OfferDriverDB) Search(to, from, type_ string) ([]*models.OfferDriverModel, error) {
-	q := `Select * From offer_user WHERE locationFrom=$1 AND locationTo=$2`
+	q := `SELECT * FROM offer_user WHERE locationFrom=$1 AND locationTo=$2 ORDER BY id DESC`
+
+	qu := `Select ava from customer where id=$1`
 
 	rows, err := pool.DB.Query(context.Background(), q, from, to)
-
 	if err != nil {
 		return nil, err
 	}
-
 	defer rows.Close()
 
 	var offers []*models.OfferDriverModel
@@ -117,9 +117,59 @@ func (pool OfferDriverDB) Search(to, from, type_ string) ([]*models.OfferDriverM
 	c := help.Choose(type_)
 
 	for rows.Next() {
+		var ava string
+
 		offer := new(models.OfferDriverModel)
 
-		err := rows.Scan(
+		if err := rows.Scan(&offer.Id,
+			&offer.Comment,
+			&offer.From,
+			&offer.To,
+			&offer.Price,
+			&offer.Type,
+			&offer.User,
+		); err != nil {
+			return nil, err
+		}
+
+		row := pool.DB.QueryRow(context.Background(), qu, offer.User)
+
+		if err := row.Scan(&ava); err != nil {
+			return nil, err
+		}
+
+		offer.UserAVA = ava
+
+		if help.Choose(offer.Type) == c {
+			offers = append(offers, offer)
+		}
+
+	}
+
+	return offers, nil
+}
+
+func (pool OfferDriverDB) SearchOneSide(from, type_ string) ([]*models.OfferDriverModel, error) {
+	q := `Select * from offer_user WHERE locationFrom=$1`
+
+	qu := `Select ava from customer where id=$1`
+
+	rows, err := pool.DB.Query(context.Background(), q, from)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var offers []*models.OfferDriverModel
+	c := help.Choose(type_)
+
+	for rows.Next() {
+		var ava string
+
+		offer := new(models.OfferDriverModel)
+
+		if err := rows.Scan(
 			&offer.Id,
 			&offer.Comment,
 			&offer.From,
@@ -127,11 +177,18 @@ func (pool OfferDriverDB) Search(to, from, type_ string) ([]*models.OfferDriverM
 			&offer.Price,
 			&offer.Type,
 			&offer.User,
-		)
-
-		if err != nil {
+		); err != nil {
 			return nil, err
 		}
+
+		row := pool.DB.QueryRow(context.Background(), qu, offer.User)
+
+		if err := row.Scan(&ava); err != nil {
+			return nil, err
+		}
+
+		offer.UserAVA = ava
+
 		if help.Choose(offer.Type) == c {
 			offers = append(offers, offer)
 		}

@@ -16,7 +16,9 @@ func NewUserRepository(ds PgxIface) UserDB {
 	}
 }
 
-func (pool UserDB) Insert(data models.UserRegister) error {
+func (pool UserDB) Insert(data models.UserRegister) (*models.UserModel, error) {
+	var user models.UserModel
+
 	q := `INSERT INTO customer(
 		phone,
         firstName,
@@ -24,14 +26,28 @@ func (pool UserDB) Insert(data models.UserRegister) error {
 		ava,
 		token
 	)VALUES($1,$2,$3,$4,$5)`
+	qu := `Select * from customer where token=$1`
 
 	_, err := pool.DB.Exec(context.Background(), q, data.Phone, data.FirstName, data.LastName, data.Avatar, data.Token)
-
 	if err != nil {
-		return err
+		return &models.UserModel{}, err
 	}
 
-	return nil
+	row := pool.DB.QueryRow(context.Background(), qu, data.Token)
+
+	if err := row.Scan(
+		&user.Id,
+		&user.Phone,
+		&user.FirstName,
+		&user.LastName,
+		&user.Avatar,
+		&user.Token,
+	); err != nil {
+		return &models.UserModel{}, err
+	}
+
+	user.Type = "user"
+	return &user, nil
 }
 
 func (pool UserDB) CheckTokenUser(token string) (*models.UserModel, error) {
@@ -53,6 +69,7 @@ func (pool UserDB) CheckTokenUser(token string) (*models.UserModel, error) {
 	if err != nil {
 		return nil, err
 	}
+	modelUser.Type = "user"
 
 	return &modelUser, nil
 

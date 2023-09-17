@@ -1,11 +1,11 @@
 package models
 
 type DriverRegister struct {
-	//Id        int    `json:"id"`
+	Id        int    `json:"id"`
 	Phone     string `json:"phone"`
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
-	Inn       string `json:"inn"`
+	Inn       string `json:"iin"`
 	Avatar    string `json:"avatar"`
 	CarNumber string `json:"carNumber"`
 	CarColor  string `json:"carColor"`

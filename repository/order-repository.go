@@ -25,7 +25,7 @@ func (pool OrderDB) CreateOrder(order dto.OrderRequest) error {
 		price,
 		type,
 		orderStatus
-	)VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9);`
+	)VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)`
 
 	_, err := pool.DB.Exec(
 		context.Background(),
@@ -65,7 +65,7 @@ func (pool OrderDB) GetDriverType(driverId int64) (string, error) {
 }
 
 func (pool OrderDB) GetOrders(driverId int64) ([]*dto.OrderResponse, error) {
-	q := `Select * From order_process WHERE orderStatus=$1`
+	q := `Select * From order_process WHERE orderStatus=$1 ORDER BY id DESC`
 
 	rows, err := pool.DB.Query(context.Background(), q, 0)
 	if err != nil {
@@ -110,7 +110,7 @@ func (pool OrderDB) GetOrders(driverId int64) ([]*dto.OrderResponse, error) {
 }
 
 func (pool OrderDB) GetMyOrders(id int64) ([]*dto.OrderResponse, error) {
-	q := `Select * From order_process WHERE userId=$1`
+	q := `Select * From order_process WHERE userId=$1 ORDER BY id DESC`
 
 	rows, err := pool.DB.Query(context.Background(), q, id)
 

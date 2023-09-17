@@ -14,9 +14,10 @@ func NewDriverRepository(ds PgxIface) DriverDB {
 	return DriverDB{DB: ds}
 }
 
-func (pool DriverDB) InsertDriverData(data models.DriverRegister) error {
+func (pool DriverDB) InsertDriverData(data models.DriverRegister) (*models.DriverModel, error) {
+	var driver models.DriverModel
 	q := `
-	   INSERT INTO driver(
+	    INSERT INTO driver(
 		  phone,
 		  firstName,
 		  lastName,
@@ -47,10 +48,33 @@ func (pool DriverDB) InsertDriverData(data models.DriverRegister) error {
 		data.Token,
 	)
 	if err != nil {
-		return err
+		return &models.DriverModel{}, err
 	}
 
-	return nil
+	qu := `Select * from driver WHERE token=$1`
+	row := pool.DB.QueryRow(context.Background(), qu, data.Token)
+
+	if err := row.Scan(
+		&driver.Id,
+		&driver.Phone,
+		&driver.FirstName,
+		&driver.LastName,
+		&driver.Inn,
+		&driver.Avatar,
+		&driver.CarNumber,
+		&driver.CarColor,
+		&driver.CarModel,
+		&driver.DocsFront,
+		&driver.DocsBacks,
+		&driver.CarType,
+		&driver.Token,
+	); err != nil {
+		return &models.DriverModel{}, err
+	}
+
+	driver.Type = "driver"
+
+	return &driver, nil
 }
 
 func (pool DriverDB) GetDriverProfile(token string) (*models.DriverModel, error) {
@@ -79,7 +103,9 @@ func (pool DriverDB) GetDriverProfile(token string) (*models.DriverModel, error)
 	if err != nil {
 		return nil, err
 	}
+	modelDriver.Type = "driver"
 	fmt.Println(modelDriver)
+
 	return &modelDriver, nil
 
 }
@@ -108,10 +134,10 @@ func (pool DriverDB) UpdateDriver(model models.DriverModel) (*models.DriverModel
 			return nil, err
 		}
 	}
-    if model.Inn != ""{
+	if model.Inn != "" {
 		q := `Update driver SET inn=$1 WHERE token=$2`
 		_, err := pool.DB.Exec(context.Background(), q, model.Inn, model.Token)
-		if err != nil{
+		if err != nil {
 			return nil, err
 		}
 	}

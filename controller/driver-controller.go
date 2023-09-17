@@ -35,14 +35,14 @@ func (d *driverController) Register(ctx *gin.Context) {
 	}
 
 	driver.Token = ctx.GetHeader("Authorization")
-	err := d.DriverService.CreateDriver(driver)
+	data, err := d.DriverService.CreateDriver(driver)
 	//fmt.Println(err.Error())
 	if err != nil {
 		ctx.JSON(http.StatusConflict, "error in driver create service.")
 		return
 	}
 
-	ctx.JSON(201, driver)
+	ctx.JSON(201, data)
 }
 
 func (d *driverController) GetProfile(ctx *gin.Context) {

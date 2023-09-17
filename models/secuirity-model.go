@@ -3,7 +3,7 @@ package models
 import "database/sql"
 
 type Security struct {
-	//Id         int64  `json:"id"`
+	Id         int64          `json:"id"`
 	UserId     int64          `json:"userId"`
 	FirsrtName string         `json:"firstName"`
 	LastName   string         `json:"lastName"`

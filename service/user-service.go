@@ -6,7 +6,7 @@ import (
 )
 
 type UserService interface {
-	Create(data models.UserRegister) error
+	Create(data models.UserRegister) (*models.UserModel, error)
 	CheckTokenUser(token string) (*models.UserModel, error)
 	Update(user models.UserModel) (*models.UserModel, error)
 	Delete(id int) error
@@ -20,14 +20,14 @@ func NewUserService(db repository.UserDB) *userService {
 	return &userService{db: db}
 }
 
-func (s *userService) Create(data models.UserRegister) error {
-	err := s.db.Insert(data)
+func (s *userService) Create(data models.UserRegister) (*models.UserModel, error) {
+	user, err := s.db.Insert(data)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return user, nil
 }
 
 func (s *userService) CheckTokenUser(token string) (*models.UserModel, error) {

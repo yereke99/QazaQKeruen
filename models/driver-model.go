@@ -6,7 +6,7 @@ type DriverModel struct {
 	Phone     string `json:"phone"`
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
-	Inn       string `json:"inn"`
+	Inn       string `json:"iin"`
 	Avatar    string `json:"avatar"`
 	CarNumber string `json:"carNumber"`
 	CarColor  string `json:"carColor"`

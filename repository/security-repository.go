@@ -100,7 +100,7 @@ func (pool *SecurityDB) Finish(id int64, time string) (*models.Security, error) 
 }
 
 func (pool *SecurityDB) GetMyHistory(id int64) ([]*models.Security, error) {
-	q := `SELECT id, userId, firstName, lastName, A, B, fiod, phone, carNumber, timeStart, timeFinish FROM security WHERE userId=$1`
+	q := `SELECT id, userId, firstName, lastName, A, B, fiod, phone, carNumber, timeStart, timeFinish FROM security WHERE userId=$1 ORDER BY id DESC`
 
 	rows, err := pool.DB.Query(context.Background(), q, id)
 
